@@ -1,6 +1,6 @@
 # ResizeX
 
-ResizeX is a Fast Image Resizer which can resize image with free size values or with fixed static values whereas the algorithms with static resizing values are faster that the general resizing algorithms. Some of the available algorithms, as for the ScaleXx, are adding also additional pixel information into the image.
+_ResizeX_ is a Fast Image Resizer which can resize image with free size values or with fixed static values whereas the algorithms with static resizing values are faster that the general resizing algorithms. Some of the available algorithms, as for the ScaleXx, are adding also additional pixel information into the image.
 
 #### Scale2x Example
 
@@ -28,7 +28,7 @@ _Remark:_ some image/scaler combinations may produce error when images get to bi
 
 ## Library
 
-All the image resizing functions are bundled in the Feuster.Imaging.Resizing.Lib
+All the image resizing functions are bundled in the _Feuster.Imaging.Resizing.Lib_
 
 A Nuget package can be found in the project folder _Nuget_.
 
@@ -119,3 +119,12 @@ A standard example for resizing a picture with a fixed scaler algorithm is:
 A standard example for resizing a picture with the FastResize scaler algorithm is:
 
 `Resize.exe -i [path_to_input_image] -o [path_to_output_image] -f -x [new_width] -y [new_height]`
+
+&nbsp;
+&nbsp;
+&nbsp;
+# Copyright
+
+© Alexander Feuster 2023
+
+_ResizeX_ and _Feuster.Imaging.Resizing.Lib_ are licensed unter the [GNU GENERAL PUBLIC LICENSE Version 2](gpl-2.0.txt)
