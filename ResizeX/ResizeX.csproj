@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>ResizeX</AssemblyName>
+    <PlatformTarget>x64</PlatformTarget>
+    <Title>ResizeX</Title>
+    <Authors>Alexander Feuster</Authors>
+    <Description>Fast Image Resizer</Description>
+    <Copyright>© 2023 Alexander Feuster</Copyright>
+    <ApplicationIcon>ResizeX.ico</ApplicationIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>gpl-2.0.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>none</DebugType>
+    <NoWarn>1701;1702;CS8601;CS8602;CS8604</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <NoWarn>1701;1702;CS8601;CS8602;CS8604</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="ResizeX.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\gpl-2.0.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="Spectre.Console" Version="0.46.1-preview.0.8" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Feuster.Imaging.Resizing.Lib\Feuster.Imaging.Resizing.Lib.csproj" />
+  </ItemGroup>
+
+</Project>

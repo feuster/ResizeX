@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ResizeX": {
+      "commandName": "Project",
+      "commandLineArgs": "-k -i \"./../../../../Examples/The Superb Parrot.jpg\" -o \"./../../../../Examples/PerformanceTest/The Superb Parrot.png\" -h"
+    }
+  }
+}
