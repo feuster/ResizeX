@@ -2,11 +2,16 @@
 
 _ResizeX_ is a Fast Image Resizer which can resize image with free size values or with fixed static values whereas the algorithms with static resizing values are faster that the general resizing algorithms. Some of the available algorithms, as for the ScaleXx, are adding also additional pixel information into the image.
 
-#### Scale2x Example
+#### Scale2x/Scale3x Examples
 
-|Original size | &rarr; | Double size |
-|:----:|:----:|:----:|
-| ![Source](./Examples/Example.png) | &rarr; | ![Scale2x](./Examples/Example-Scale2x.png)|
+|Original size |![Source](./Examples/Example.png) |
+|:----:|:----:|
+|Double size (Scale2x) |![Source](./Examples/Example-Scale2x.png) |
+|Triple size (Scale3x) |![Source](./Examples/Example-Scale3x.png) |
+
+&nbsp;
+&nbsp;
+&nbsp;
 
 ## Available algorithm groups
 
@@ -24,7 +29,7 @@ Information about the Scale2X/Scale3X algorithm can be found at the [Scale2x hom
 
 For every algorithm group are 8 algorithms available which scale to 200%, 300%, 400%, 600%, 800%, 900%, 1200% or 1600%.
 
-_Remark:_ some image/scaler combinations may produce errors when images get to big in size/memory consumption
+_Remark:_ some image/scaler combinations may produce errors when images get to big in size/memory consumption!
 
 ## Library
 
@@ -34,7 +39,7 @@ A Nuget package can be found in the project folder _Nuget_.
 
 ## Performance Test
 
-The following tables show an example performance comparision of all scaler algorithms on a Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz whereas ResizeXXX is the default .net image scaler.
+The following tables show an example performance comparision of all scaler algorithms on a _Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz_ whereas ResizeXXX is the default .net image scaler.
 The performance test measures the pure conversion duration within a algorithm group without the time for file handling as loading or saving the image, so the results are independent of the type of storage where the image I/O is done.
 
 ### Reference Image
