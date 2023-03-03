@@ -24,7 +24,7 @@ Information about the Scale2X/Scale3X algorithm can be found at the [Scale2x hom
 
 For every algorithm group are 8 algorithms available which scale to 200%, 300%, 400%, 600%, 800%, 900%, 1200% or 1600%.
 
-_Remark:_ some image/scaler combinations may produce error when images get to big in size/memory consumption
+_Remark:_ some image/scaler combinations may produce errors when images get to big in size/memory consumption
 
 ## Library
 
