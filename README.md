@@ -1,6 +1,6 @@
 # ResizeX
 
-_ResizeX_ is a Fast Image Resizer which can resize image with free size values or with fixed static values whereas the algorithms with static resizing values are faster that the general resizing algorithms. Some of the available algorithms, as for the ScaleXx, are adding also additional pixel information into the image.
+_ResizeX_ is a Fast Image Resizer which can resize images with free size values or with fixed static values whereas the algorithms with static resizing values are faster that the general resizing algorithms. Some of the available algorithms, as for the ScaleXx, are adding also additional pixel information into the image.
 
 #### Scale2x/Scale3x Examples
 
@@ -41,6 +41,7 @@ A Nuget package can be found in the project folder _Nuget_.
 
 The following tables show an example performance comparision of all scaler algorithms on a _Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz_ whereas ResizeXXX is the default .net image scaler.
 The performance test measures the pure conversion duration within a algorithm group without the time for file handling as loading or saving the image, so the results are independent of the type of storage where the image I/O is done.
+The performance test is integrated in _ResizeX_, see [commandline reference](#usage) for details.
 
 ### Reference Image
 
@@ -108,9 +109,9 @@ With the ResizeXx as fastest algorithm this can be easily up to 2 to 4 times fas
 
 ResizeX is a commandline tool which means it is controlled via commandline arguments within a shell or script.
 
-For help on the available commandline arguments type:
+For a full help on the available commandline arguments type:
 
-`Resize.exe -h`
+`Resize.exe -h`&nbsp;&nbsp;or&nbsp;&nbsp;`Resize.exe --help`
 
 For help on the available algorithms type:
 
@@ -120,10 +121,17 @@ A standard example for resizing a picture with a fixed scaler algorithm is:
 
 `Resize.exe -i [path_to_input_image] -o [path_to_output_image] -s [scalertype]`
 
-
 A standard example for resizing a picture with the FastResize scaler algorithm is:
 
 `Resize.exe -i [path_to_input_image] -o [path_to_output_image] -f -x [new_width] -y [new_height]`
+
+A standard example for a performance test without saving the result images:
+
+`Resize.exe -i [path_to_input_image] -n`
+
+A standard example for a performance test with saving the result images:
+
+`Resize.exe -i [path_to_input_image] -o [path_to_output_image] -p`
 
 &nbsp;
 &nbsp;
