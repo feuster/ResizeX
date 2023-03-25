@@ -1,6 +1,6 @@
 # ResizeX
 
-_ResizeX_ is a Fast Image Resizer which can resize images with free size values or with fixed static values whereas the algorithms with static resizing values are faster that the general resizing algorithms. Some of the available algorithms, as for the ScaleXx, are adding also additional pixel information into the image.
+_ResizeX_ is a Fast Image Resizer which can resize images with free size values or with fixed static values whereas the algorithms with static resizing values are faster than the general resizing algorithms. Some of the available algorithms, as for the ScaleXx, are adding also additional pixel information into the image.
 
 #### Scale2x/Scale3x Examples
 
@@ -52,7 +52,7 @@ The following image is used as reference source for the performance test and can
 
 ### Performance Results
  #
-##### __Resizing the reference picture to 300% size:__
+##### __Resizing the reference picture to 200% size:__
 | Resize2x | Scale2x | FastResize200 | Resize200 | SharpResize200 |
 |:----:|:----:|:----:|:----:|:----:|
 | 60ms | 73ms | 140ms | 143ms | 241ms |
