@@ -2,10 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFrameworks>net6.0-windows;net7.0-windows</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>ResizeX</AssemblyName>
+	<AssemblyVersion>2.0.0.0</AssemblyVersion>
+	<FileVersion>2.0.0.0</FileVersion>
+	<Version>$(AssemblyVersion)</Version>
+	<SignAssembly>False</SignAssembly>
     <PlatformTarget>x64</PlatformTarget>
     <Title>ResizeX</Title>
     <Authors>Alexander Feuster</Authors>
@@ -13,7 +17,10 @@
     <Copyright>© 2023 Alexander Feuster</Copyright>
     <ApplicationIcon>ResizeX.ico</ApplicationIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+	<NeutralLanguage>en-001</NeutralLanguage>
     <PackageLicenseFile>gpl-2.0.txt</PackageLicenseFile>
+    <PackageLicenseExpression>GPL-2.0-only</PackageLicenseExpression>
+	<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>	  
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
