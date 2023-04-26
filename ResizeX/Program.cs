@@ -17,7 +17,7 @@ namespace Feuster.Imaging.Resizing
                                             |_| \_\___||___/_/___\___/_/\_\";
 
         //GitVersion will be only be actualized/overwritten when using Cake build!
-        public const string GitVersion = "git-55273cc";
+        public const string GitVersion = "git-9be4b9f";
         public static string Version = Assembly.GetEntryAssembly().GetName().Version.Major.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Build.ToString();
         public static string InputFile = string.Empty;
         public static string OutputFile = string.Empty;
@@ -163,8 +163,11 @@ namespace Feuster.Imaging.Resizing
             Console.BufferHeight = 1000;
             AnsiConsole.MarkupLine($"[blue]{Figlet}[/]\n");
             AnsiConsole.Write(new Rule("[blue][bold]Fast Image Resizer[/][/]").Centered());
-            AnsiConsole.Write("\n\n");
-            AnsiConsole.MarkupLine($"[blue]Version: {Version}-{GitVersion}[/]\n\n");
+            AnsiConsole.Write("\n");
+            if (GitVersion != string.Empty)
+                AnsiConsole.MarkupLine($"[blue]Version: {Version}-{GitVersion} (Lib Version: {Scaler.LibVersion})[/]\n");
+            else
+                AnsiConsole.MarkupLine($"[blue]Version: {Version}[/]\n");
 
             //Parse commandline arguments
             try
@@ -455,6 +458,7 @@ namespace Feuster.Imaging.Resizing
                 AnsiConsole.MarkupLine($"[red]Exception: {ex.Message}[/]");
                 PressAnyKey();
             }
+
             //Start resizing the image
             AnsiConsole.WriteLine("");
             AnsiConsole.Write(new Rule("[turquoise2]Start resizing[/]").Centered());

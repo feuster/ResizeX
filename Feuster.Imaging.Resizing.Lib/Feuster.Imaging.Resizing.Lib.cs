@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -7,8 +8,25 @@ namespace Feuster.Imaging.Resizing
 {
     public class Scaler
     {
+        //GitVersion will be only be actualized/overwritten when using Cake build of ResizeX!
+        public const string GitVersion = "git-9be4b9f";
+
         //Version string
         public static string Version = Assembly.GetEntryAssembly().GetName().Version.Major.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Minor.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Revision.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Build.ToString();
+
+        /// <summary>
+        /// Call to library version
+        /// </summary>
+        /// <returns>Version string</returns>
+        internal static string GetVersion()
+        {
+            if (GitVersion != string.Empty)
+                return $"{Version}-{GitVersion}";
+            else
+                return Version;
+        }
+        public static string LibVersion => GetVersion();
+
 
         //List of the available Scaler algorithm groups
         public enum ScalerGroups

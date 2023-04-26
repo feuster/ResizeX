@@ -6,6 +6,8 @@
 #addin nuget:?package=Cake.FileHelpers&version=6.1.3
 
 var artifacts = Argument("artifacts", "artifacts");
+var libartifacts = Argument("libartifacts", "lib");
+var nugetartifacts = Argument("nugetartifacts", "nuget");
 var configuration = Argument("configuration", "Release");
 var framework = Argument("framework", "net6.0");
 var runtime = Argument("runtime", "win-x64");
@@ -61,19 +63,41 @@ Task("Clean")
     {
         Console.WriteLine(Environment.NewLine + $"Cleaning folder: ./ResizeX/bin/{configuration}");
         CleanDirectory($"./ResizeX/bin/{configuration}");
+        Console.WriteLine(Environment.NewLine + $"Cleaning folder: ./Feuster.Imaging.Resizing.Lib/bin/{configuration}");
+        CleanDirectory($"./Feuster.Imaging.Resizing.Lib/bin/{configuration}");
     });
 
 Task("CleanArtifacts")
     .Does(() =>
     {
+        Console.WriteLine(Environment.NewLine + $"Cleaning folder: ./{libartifacts}");
+        CleanDirectory($"./{libartifacts}");
+        Console.WriteLine(Environment.NewLine + $"Cleaning folder: ./{nugetartifacts}");
+        CleanDirectory($"./{nugetartifacts}");
         Console.WriteLine(Environment.NewLine + $"Cleaning folder: ./{artifacts}");
         CleanDirectory($"./{artifacts}");
     });
 
-Task("RegexGitVersion")
+Task("RegexFiles")
     .IsDependentOn("GitVersion")
     .Does(() =>
     {
+        if (FileExists("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.cs"))
+        {
+            Console.WriteLine(Environment.NewLine + "Patching nuget artifact path in Feuster.Imaging.Resizing.Lib.csproj");
+            ReplaceRegexInFiles("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.csproj", 
+                                "<PackageOutputPath>(.*?)</PackageOutputPath>", 
+                                $"<PackageOutputPath>./../{nugetartifacts}</PackageOutputPath>");
+        }
+
+        if (FileExists("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.cs"))
+        {
+            Console.WriteLine(Environment.NewLine + "Patching git revision in Feuster.Imaging.Resizing.Lib.cs");
+            ReplaceRegexInFiles("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.cs", 
+                                "const string GitVersion = \"(.*?)\"", 
+                                $"const string GitVersion = \"{SGitVersion}\"");
+        }
+
         if (FileExists("./ResizeX/Program.cs"))
         {
             Console.WriteLine(Environment.NewLine + "Patching git revision in Program.cs");
@@ -84,10 +108,15 @@ Task("RegexGitVersion")
     });
 
 Task("Build")
-    .IsDependentOn("Clean")
-    .IsDependentOn("RegexGitVersion")
+    .IsDependentOn("CleanAll")
+    .IsDependentOn("RegexFiles")
     .Does(() =>
     {
+        DotNetBuild("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.csproj", new DotNetBuildSettings
+        {
+            Configuration = configuration,
+        });
+
         DotNetBuild("./ResizeX/ResizeX.csproj", new DotNetBuildSettings
         {
             Configuration = configuration,
@@ -96,9 +125,19 @@ Task("Build")
 
 Task("Publish")
     .IsDependentOn("CleanAll")
-    .IsDependentOn("RegexGitVersion")
+    .IsDependentOn("RegexFiles")
     .Does(() =>
     {
+        Console.WriteLine();
+        DotNetPublish("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.csproj", new DotNetPublishSettings
+        {
+            Configuration = configuration,
+            Framework = framework,
+            OutputDirectory = $"./{libartifacts}/",
+            Runtime = runtime,
+            SelfContained = false
+        });
+
         Console.WriteLine();
         DotNetPublish("./ResizeX/ResizeX.csproj", new DotNetPublishSettings
         {
@@ -129,31 +168,68 @@ Task("Test")
 
 Task("ZipRelease")
     .IsDependentOn("AssemblyVersion")
+	.IsDependentOn("Build")
     .IsDependentOn("Publish")
     .Does(() =>
     {
         var WorkDir = Context.Environment.WorkingDirectory;
+
+        if (FileExists($"{WorkDir}/Release/Feuster.Imaging.Resizing.Lib_{runtime}_{SGitVersion}.zip"))
+        {
+            Console.Write(Environment.NewLine + $"Deleting existing Feuster.Imaging.Resizing.Lib_{runtime}_{SGitVersion}.zip");
+            DeleteFile($"{WorkDir}/Release/Feuster.Imaging.Resizing.Lib_{runtime}_{SGitVersion}.zip");
+        }
         if (FileExists($"{WorkDir}/Release/ResizeX_V{sAssemblyVersion}_{runtime}_{SGitVersion}.zip"))
         {
             Console.Write(Environment.NewLine + $"Deleting existing ResizeX_V{sAssemblyVersion}_{runtime}_{SGitVersion}.zip");
             DeleteFile($"{WorkDir}/Release/ResizeX_V{sAssemblyVersion}_{runtime}_{SGitVersion}.zip");
         }
-        Context.Environment.WorkingDirectory +=  $"/{artifacts}/";
-        Console.Write(Environment.NewLine + "Start Zipping...");
+
+        Console.Write(Environment.NewLine + Environment.NewLine + "Start Zipping ResizeX...");
         FilePathCollection files;
 		files = new FilePathCollection(new[]
 					{
-						new FilePath($"./ResizeX.exe"),
 						new FilePath($"{WorkDir}/gpl-2.0.txt"),
 						new FilePath($"{WorkDir}/README.md")
 					});
 		DirectoryPathCollection directories;
 		directories = new DirectoryPathCollection(new[]
 					{
+						new DirectoryPath($"{WorkDir}/{libartifacts}/"),
+						new DirectoryPath($"{WorkDir}/{nugetartifacts}/")
+					});
+		SwitchCompressionMethod method = new SwitchCompressionMethod();
+		method.Level = 9;
+		method.Method = "Bzip2";
+        SevenZip(new SevenZipSettings
+        {
+            Command = new AddCommand
+            {
+                Files = files,
+				Directories = directories,
+				CompressionMethod = method,
+                Archive = new FilePath($"{WorkDir}/Release/Feuster.Imaging.Resizing.Lib_{runtime}_{SGitVersion}.zip"),
+            }
+        });
+        Context.Environment.WorkingDirectory =  WorkDir;
+        Console.WriteLine("finished!" + Environment.NewLine);
+        if (FileExists($"{WorkDir}/Release/Feuster.Imaging.Resizing.Lib_{runtime}_{SGitVersion}.zip"))
+            Console.WriteLine($"Feuster.Imaging.Resizing.Lib_{runtime}_{SGitVersion}.zip successfully created!");
+        else
+            Console.WriteLine($"Feuster.Imaging.Resizing.Lib_{runtime}_{SGitVersion}.zip creation failed!");
+
+        Context.Environment.WorkingDirectory +=  $"/{artifacts}/";
+        Console.Write(Environment.NewLine + "Start Zipping ResizeX...");
+		files = new FilePathCollection(new[]
+					{
+						new FilePath($"./ResizeX.exe"),
+						new FilePath($"{WorkDir}/gpl-2.0.txt"),
+						new FilePath($"{WorkDir}/README.md")
+					});
+		directories = new DirectoryPathCollection(new[]
+					{
 						new DirectoryPath($"{WorkDir}/Examples/")
 					});
-					
-		SwitchCompressionMethod method = new SwitchCompressionMethod();
 		method.Level = 9;
 		method.Method = "Bzip2";
         SevenZip(new SevenZipSettings

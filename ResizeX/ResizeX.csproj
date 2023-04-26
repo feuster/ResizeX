@@ -34,7 +34,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="ResizeX.ico" />
+    <None Remove="README.md" />
+	<None Remove="gpl-2.0.txt" />
   </ItemGroup>
 
   <ItemGroup>
