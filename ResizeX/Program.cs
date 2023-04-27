@@ -17,7 +17,7 @@ namespace Feuster.Imaging.Resizing
                                             |_| \_\___||___/_/___\___/_/\_\";
 
         //GitVersion will be only be actualized/overwritten when using Cake build!
-        public const string GitVersion = "git-9be4b9f";
+        public const string GitVersion = "git-2273bbc";
         public static string Version = Assembly.GetEntryAssembly().GetName().Version.Major.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Build.ToString();
         public static string InputFile = string.Empty;
         public static string OutputFile = string.Empty;

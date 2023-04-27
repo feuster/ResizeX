@@ -15,6 +15,7 @@ var target = Argument("target", "ZipRelease");
 IEnumerable<string> IGitVersion;
 string SGitVersion;
 string sAssemblyVersion;
+string sAssemblyVersionLib;
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -23,6 +24,17 @@ string sAssemblyVersion;
 Task("AssemblyVersion")
     .Does(() =>
     {
+        if (FileExists("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.cs"))
+        {
+            Console.WriteLine(Environment.NewLine + "Reading assembly version from Feuster.Imaging.Resizing.Lib.csproj");
+            sAssemblyVersionLib = FindRegexMatchInFile("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.csproj", 
+                                "<AssemblyVersion>(.*?)</AssemblyVersion>",
+                                System.Text.RegularExpressions.RegexOptions.None
+                                );
+            sAssemblyVersionLib = sAssemblyVersionLib.Replace("<AssemblyVersion>","").Replace("</AssemblyVersion>","");
+            Console.WriteLine(Environment.NewLine + $"Lib AssemblyVersion version: {sAssemblyVersionLib}");
+        }
+
         if (FileExists("./ResizeX/Program.cs"))
         {
             Console.WriteLine(Environment.NewLine + "Reading assembly version from ResizeX.csproj");
@@ -31,7 +43,7 @@ Task("AssemblyVersion")
                                 System.Text.RegularExpressions.RegexOptions.None
                                 );
             sAssemblyVersion = sAssemblyVersion.Replace("<AssemblyVersion>","").Replace("</AssemblyVersion>","").Replace("0.0.","");
-            Console.WriteLine(Environment.NewLine + $"AssemblyVersion version: {sAssemblyVersion}");
+            Console.WriteLine(Environment.NewLine + $"ResizeX AssemblyVersion version: {sAssemblyVersion}");
         }
     });
 
@@ -96,6 +108,10 @@ Task("RegexFiles")
             ReplaceRegexInFiles("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.cs", 
                                 "const string GitVersion = \"(.*?)\"", 
                                 $"const string GitVersion = \"{SGitVersion}\"");
+            Console.WriteLine(Environment.NewLine + "Patching AssemblyVersion hardcoded in Feuster.Imaging.Resizing.Lib.cs");
+            ReplaceRegexInFiles("./Feuster.Imaging.Resizing.Lib/Feuster.Imaging.Resizing.Lib.cs", 
+                                "public static string Version = \"(.*?)\"", 
+                                $"public static string Version = \"{sAssemblyVersionLib}\"");
         }
 
         if (FileExists("./ResizeX/Program.cs"))
@@ -142,7 +158,9 @@ Task("Publish")
         DotNetPublish("./ResizeX/ResizeX.csproj", new DotNetPublishSettings
         {
             Configuration = configuration,
-            EnableCompressionInSingleFile = false,
+            EnableCompressionInSingleFile = true,
+			IncludeAllContentForSelfExtract = true,
+			IncludeNativeLibrariesForSelfExtract = true,
             Framework = framework,
             OutputDirectory = $"./{artifacts}/",
             PublishSingleFile = true,

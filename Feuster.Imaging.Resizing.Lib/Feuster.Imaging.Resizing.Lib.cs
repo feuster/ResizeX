@@ -9,10 +9,10 @@ namespace Feuster.Imaging.Resizing
     public class Scaler
     {
         //GitVersion will be only be actualized/overwritten when using Cake build of ResizeX!
-        public const string GitVersion = "git-9be4b9f";
+        public const string GitVersion = "git-2273bbc";
 
-        //Version string
-        public static string Version = Assembly.GetEntryAssembly().GetName().Version.Major.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Minor.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Revision.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Build.ToString();
+        //Version string will be only be actualized/overwritten when using Cake build of ResizeX as fallback Assembly is read out but this works not if lib is compiled into exe!
+        public static string Version = "1.0.1.0";
 
         /// <summary>
         /// Call to library version
@@ -20,6 +20,8 @@ namespace Feuster.Imaging.Resizing
         /// <returns>Version string</returns>
         internal static string GetVersion()
         {
+            if (Version == string.Empty)
+                Version = Assembly.GetEntryAssembly().GetName().Version.Major.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Minor.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Revision.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Build.ToString();
             if (GitVersion != string.Empty)
                 return $"{Version}-{GitVersion}";
             else
