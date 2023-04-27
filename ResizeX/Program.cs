@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using CommandLine;
 using CommandLine.Text;
 using Spectre.Console;
@@ -16,7 +16,9 @@ namespace Feuster.Imaging.Resizing
                                             |  _ <  __/\__ \ |/ /  __//  \ 
                                             |_| \_\___||___/_/___\___/_/\_\";
 
-        public static string Version = Assembly.GetEntryAssembly().GetName().Version.Major.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Minor.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Revision.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Build.ToString();
+        //GitVersion will be only be actualized/overwritten when using Cake build!
+        public const string GitVersion = "git-2273bbc";
+        public static string Version = Assembly.GetEntryAssembly().GetName().Version.Major.ToString() + "." + Assembly.GetEntryAssembly().GetName().Version.Build.ToString();
         public static string InputFile = string.Empty;
         public static string OutputFile = string.Empty;
         public static string ScalerAlgorithm = string.Empty;
@@ -161,289 +163,301 @@ namespace Feuster.Imaging.Resizing
             Console.BufferHeight = 1000;
             AnsiConsole.MarkupLine($"[blue]{Figlet}[/]\n");
             AnsiConsole.Write(new Rule("[blue][bold]Fast Image Resizer[/][/]").Centered());
-            AnsiConsole.Write("\n\n");
+            AnsiConsole.Write("\n");
+            if (GitVersion != string.Empty)
+                AnsiConsole.MarkupLine($"[blue]Version: {Version}-{GitVersion} (Lib Version: {Scaler.LibVersion})[/]\n");
+            else
+                AnsiConsole.MarkupLine($"[blue]Version: {Version}[/]\n");
 
             //Parse commandline arguments
-            var parser = new Parser(with =>
+            try
             {
-                with.AutoHelp = false;
-                with.AutoVersion = false;
-                with.HelpWriter = null;
-            });
-            var parserresult = parser.ParseArguments<Options>(args);
-            parserresult.WithParsed<Options>(o =>
-                               {
-                                   //Keep console window open
-                                   KeepConsoleWindowOpen = o.Keepopen;
-
-                                   //Show help
-                                   if (o.Help)
+                var parser = new Parser(with =>
+                {
+                    with.AutoHelp = false;
+                    with.AutoVersion = false;
+                    with.HelpWriter = null;
+                });
+                var parserresult = parser.ParseArguments<Options>(args);
+                parserresult.WithParsed<Options>(o =>
                                    {
-                                       var Helptext = HelpText.AutoBuild<Options>
-                                       (parserresult,
-                                           h => { return HelpText.DefaultParsingErrorsHandler<Options>(parserresult, h); },
-                                           e => { return e; }
-                                       );
-                                       AnsiConsole.Write(new Rule("[turquoise2]ResizeX Help[/]").Centered());
-                                       AnsiConsole.WriteLine("");
-                                       Helptext.Copyright = "(c) " + DateTime.Now.ToString("yyyy") + " Alexander Feuster";
-                                       Helptext.AddPostOptionsLine("Remark: depending on the picture size and memory usage not all scalers can be aplicated. Especially big scalers on big pictures may fail.");
-                                       AnsiConsole.Markup("[white]" + Helptext + "[/]");
-                                       AnsiConsole.WriteLine("");
-                                       PressAnyKey(true);
-                                   }
+                                       //Keep console window open
+                                       KeepConsoleWindowOpen = o.Keepopen;
 
-                                   //Show version
-                                   if (o.Version)
-                                   {
-                                       AnsiConsole.Write(new Rule("[turquoise2]Versions[/]").Centered());
-                                       AnsiConsole.WriteLine("");
-                                       Table _Table = new Table();
-                                       _Table.AddColumns
-                                       (
-                                           new TableColumn("ResizeX").Centered().Width(30),
-                                           new TableColumn("Feuster.Imaging.Resizing.Lib").Centered().Width(30)
-                                       );
-                                       _Table.AddRow(new Text[]
+                                       //Show help
+                                       if (o.Help)
                                        {
-                                               new Text(Version, new Style(Spectre.Console.Color.Teal)).Centered(),
-                                               new Text(Scaler.Version, new Style(Spectre.Console.Color.Teal)).Centered()
-                                       }).LeftAligned();
-                                       AnsiConsole.WriteLine("");
-                                       _Table.Centered();
-                                       AnsiConsole.Write(_Table);
-                                       PressAnyKey(true);
-                                   }
+                                           var Helptext = HelpText.AutoBuild<Options>
+                                           (parserresult,
+                                               h => { return HelpText.DefaultParsingErrorsHandler<Options>(parserresult, h); },
+                                               e => { return e; }
+                                           );
+                                           AnsiConsole.Write(new Rule("[turquoise2]ResizeX Help[/]").Centered());
+                                           AnsiConsole.WriteLine("");
+                                           Helptext.Copyright = "(c) " + DateTime.Now.ToString("yyyy") + " Alexander Feuster";
+                                           Helptext.AddPostOptionsLine("Remark: depending on the picture size and memory usage not all scalers can be aplicated. Especially big scalers on big pictures may fail.");
+                                           AnsiConsole.Markup("[white]" + Helptext + "[/]");
+                                           AnsiConsole.WriteLine("");
+                                           PressAnyKey(true);
+                                       }
 
-                                   //Parse show scaler description list
-                                   if (o.DescriptionList)
-                                   {
-                                       AnsiConsole.Write(new Rule("[turquoise2]Descriptions of supported fixed scaler algorithms[/]").Centered());
-                                       AnsiConsole.WriteLine("");
-                                       int _Count = Enum.GetValues(typeof(Scaler.Scalers)).Length;
-                                       var _Table = new Table();
-                                       _Table.AddColumns(new TableColumn("Algorithm").LeftAligned(), new TableColumn("Description").LeftAligned());
-
-                                       for (int i = 0; i < _Count; i++)
+                                       //Show version
+                                       if (o.Version)
                                        {
+                                           AnsiConsole.Write(new Rule("[turquoise2]Versions[/]").Centered());
+                                           AnsiConsole.WriteLine("");
+                                           Table _Table = new Table();
+                                           _Table.AddColumns
+                                           (
+                                               new TableColumn("ResizeX").Centered().Width(30),
+                                               new TableColumn("Feuster.Imaging.Resizing.Lib").Centered().Width(30)
+                                           );
                                            _Table.AddRow(new Text[]
                                            {
+                                               new Text($"{Version}-{GitVersion}", new Style(Spectre.Console.Color.Teal)).Centered(),
+                                               new Text(Scaler.Version, new Style(Spectre.Console.Color.Teal)).Centered()
+                                           }).LeftAligned();
+                                           AnsiConsole.WriteLine("");
+                                           _Table.Centered();
+                                           AnsiConsole.Write(_Table);
+                                           PressAnyKey(true);
+                                       }
+
+                                       //Parse show scaler description list
+                                       if (o.DescriptionList)
+                                       {
+                                           AnsiConsole.Write(new Rule("[turquoise2]Descriptions of supported fixed scaler algorithms[/]").Centered());
+                                           AnsiConsole.WriteLine("");
+                                           int _Count = Enum.GetValues(typeof(Scaler.Scalers)).Length;
+                                           var _Table = new Table();
+                                           _Table.AddColumns(new TableColumn("Algorithm").LeftAligned(), new TableColumn("Description").LeftAligned());
+
+                                           for (int i = 0; i < _Count; i++)
+                                           {
+                                               _Table.AddRow(new Text[]
+                                               {
                                                new Text(Enum.GetName(typeof(Scaler.Scalers), (Scaler.Scalers)i).PadRight(16), new Style(Spectre.Console.Color.Teal)).RightJustified(),
                                                new Text(Scaler.ScalerDescriptions[i], new Style(Spectre.Console.Color.Teal)).RightJustified()
-                                           }).LeftAligned();
-                                           _Table.AddEmptyRow();
-                                       }
-                                       _Table.Expand();
-                                       AnsiConsole.Write(_Table);
-                                       AnsiConsole.WriteLine("");
-                                       PressAnyKey(true);
-                                   }
-
-                                   //Parse show scaler list
-                                   if (o.List)
-                                   {
-                                       AnsiConsole.Write(new Rule("[turquoise2]List of supported fixed scaler algorithms[/]").Centered());
-                                       AnsiConsole.WriteLine("");
-
-                                       int _Count = Enum.GetValues(typeof(Scaler.ScalerGroups)).Length;
-                                       int _Count2 = Enum.GetValues(typeof(Scaler.Scalers)).Length / _Count;
-                                       var _Table = new Table();
-                                       var _Table2 = new Table();
-
-                                       //Scaler description
-                                       _Table.AddColumns(new TableColumn("Algorithm").LeftAligned(), new TableColumn("Description").LeftAligned());
-                                       for (int i = 0; i < _Count; i++)
-                                       {
-                                           _Table.AddRow("[teal]" + Enum.GetName(typeof(Scaler.ScalerGroups), (Scaler.ScalerGroups)i).PadRight(16) + "[/]", "[teal]" + Scaler.ScalerGroupsDescriptions[i] + "[/]");
-                                       }
-
-                                       //Table header
-                                       for (int i = 0; i < _Count; i++)
-                                       {
-                                           _Table2.AddColumn(new TableColumn(Enum.GetName(typeof(Scaler.ScalerGroups), (Scaler.ScalerGroups)i)).Centered());
-                                       }
-
-                                       //Table rows
-                                       for (int i = 0; i < _Count2; i++)
-                                       {
-                                           List<Spectre.Console.Rendering.IRenderable> _Items = new List<Spectre.Console.Rendering.IRenderable>();
-                                           _Items.Clear();
-                                           for (int i2 = 0; i2 < _Count; i2++)
-                                           {
-                                               _Items.Add(new Text(Enum.GetName(typeof(Scaler.Scalers), (Scaler.Scalers)((i2 * _Count2) + i)), new Style(Spectre.Console.Color.Teal)));
+                                               }).LeftAligned();
+                                               _Table.AddEmptyRow();
                                            }
-                                           _Table2.AddRow(_Items);
-                                       }
-                                       _Table.Expand();
-                                       _Table2.Expand();
-                                       AnsiConsole.Write(_Table);
-                                       AnsiConsole.Write(_Table2);
-                                       AnsiConsole.WriteLine("");
-                                       PressAnyKey(true);
-                                   }
-
-                                   //Start parsing the resizing parameters
-                                   AnsiConsole.Write(new Rule("[turquoise2]Parsing parameters[/]").Centered());
-                                   AnsiConsole.WriteLine("");
-
-                                   //Performance test
-                                   if (o.Performance)
-                                   {
-                                       PerformanceTest = true;
-                                       PerformanceTestNoOutputFiles = false;
-                                   }
-                                   if (o.PerformanceNoOutput)
-                                   {
-                                       PerformanceTest = true;
-                                       PerformanceTestNoOutputFiles = true;
-                                   }
-
-                                   //Variable resizing
-                                   Resize = o.Resize;
-                                   FastResize = o.FastResize;
-                                   SharpResize = o.SharpResize;
-                                   if (FastResize || Resize || SharpResize)
-                                   {
-                                       if (FastResize && !Resize && !SharpResize)
-                                       {
-                                           AnsiConsole.MarkupLine("[green]Info: FastResize mode selected, Scaler settings will be ignored[/]");
-                                       }
-                                       else if (!FastResize && Resize && !SharpResize)
-                                       {
-                                           AnsiConsole.MarkupLine("[green]Info: .net default Resize mode selected, Scaler settings will be ignored[/]");
-                                       }
-                                       else if (!FastResize && !Resize && SharpResize)
-                                       {
-                                           AnsiConsole.MarkupLine("[green]Info: SharpResize mode selected, Scaler settings will be ignored[/]");
-                                       }
-                                       else
-                                       {
-                                           AnsiConsole.MarkupLine("[green]Info: several resizer methods specified, using FastResize as default mode selected, Scaler settings will be ignored[/]");
-                                           Resize = false;
-                                           FastResize = true;
-                                           SharpResize = false;
-                                       }
-
-                                       if (PerformanceTest)
-                                       {
-                                           AnsiConsole.MarkupLine("[green]Info: performance test disabled[/]");
-                                           PerformanceTest = false;
-                                       }
-                                       if (o.Width == 0)
-                                       {
-                                           AnsiConsole.MarkupLine("[red]Info: width is not allowed to be 0[/]");
+                                           _Table.Expand();
+                                           AnsiConsole.Write(_Table);
+                                           AnsiConsole.WriteLine("");
                                            PressAnyKey(true);
                                        }
-                                       if (o.Height == 0)
-                                       {
-                                           AnsiConsole.MarkupLine("[red]Info: heigth is not allowed to be 0[/]");
-                                           PressAnyKey(true);
-                                       }
-                                       NewWidth = o.Width;
-                                       NewHeight = o.Height;
-                                       AnsiConsole.MarkupLine($"[green]Info: new image size is set to {NewWidth}x{NewHeight}[/]");
-                                   }
 
-                                   //Parse input file
-                                   if (o.Input == string.Empty)
-                                   {
-                                       if (args.Length < 1)
+                                       //Parse show scaler list
+                                       if (o.List)
                                        {
-                                           AnsiConsole.MarkupLine("[red]Error: no inputfile[/]");
-                                           PressAnyKey(true);
-                                       }
-                                       else
-                                       {
-                                           if (File.Exists(args[0]))
+                                           AnsiConsole.Write(new Rule("[turquoise2]List of supported fixed scaler algorithms[/]").Centered());
+                                           AnsiConsole.WriteLine("");
+
+                                           int _Count = Enum.GetValues(typeof(Scaler.ScalerGroups)).Length;
+                                           int _Count2 = Enum.GetValues(typeof(Scaler.Scalers)).Length / _Count;
+                                           var _Table = new Table();
+                                           var _Table2 = new Table();
+
+                                           //Scaler description
+                                           _Table.AddColumns(new TableColumn("Algorithm").LeftAligned(), new TableColumn("Description").LeftAligned());
+                                           for (int i = 0; i < _Count; i++)
                                            {
-                                               InputFile = args[0];
-                                               AnsiConsole.MarkupLine("[green]Info: inputfile " + ShortString(InputFile, 60) + "[/]");
+                                               _Table.AddRow("[teal]" + Enum.GetName(typeof(Scaler.ScalerGroups), (Scaler.ScalerGroups)i).PadRight(16) + "[/]", "[teal]" + Scaler.ScalerGroupsDescriptions[i] + "[/]");
+                                           }
+
+                                           //Table header
+                                           for (int i = 0; i < _Count; i++)
+                                           {
+                                               _Table2.AddColumn(new TableColumn(Enum.GetName(typeof(Scaler.ScalerGroups), (Scaler.ScalerGroups)i)).Centered());
+                                           }
+
+                                           //Table rows
+                                           for (int i = 0; i < _Count2; i++)
+                                           {
+                                               List<Spectre.Console.Rendering.IRenderable> _Items = new List<Spectre.Console.Rendering.IRenderable>();
+                                               _Items.Clear();
+                                               for (int i2 = 0; i2 < _Count; i2++)
+                                               {
+                                                   _Items.Add(new Text(Enum.GetName(typeof(Scaler.Scalers), (Scaler.Scalers)((i2 * _Count2) + i)), new Style(Spectre.Console.Color.Teal)));
+                                               }
+                                               _Table2.AddRow(_Items);
+                                           }
+                                           _Table.Expand();
+                                           _Table2.Expand();
+                                           AnsiConsole.Write(_Table);
+                                           AnsiConsole.Write(_Table2);
+                                           AnsiConsole.WriteLine("");
+                                           PressAnyKey(true);
+                                       }
+
+                                       //Start parsing the resizing parameters
+                                       AnsiConsole.Write(new Rule("[turquoise2]Parsing parameters[/]").Centered());
+                                       AnsiConsole.WriteLine("");
+
+                                       //Performance test
+                                       if (o.Performance)
+                                       {
+                                           PerformanceTest = true;
+                                           PerformanceTestNoOutputFiles = false;
+                                       }
+                                       if (o.PerformanceNoOutput)
+                                       {
+                                           PerformanceTest = true;
+                                           PerformanceTestNoOutputFiles = true;
+                                       }
+
+                                       //Variable resizing
+                                       Resize = o.Resize;
+                                       FastResize = o.FastResize;
+                                       SharpResize = o.SharpResize;
+                                       if (FastResize || Resize || SharpResize)
+                                       {
+                                           if (FastResize && !Resize && !SharpResize)
+                                           {
+                                               AnsiConsole.MarkupLine("[green]Info: FastResize mode selected, Scaler settings will be ignored[/]");
+                                           }
+                                           else if (!FastResize && Resize && !SharpResize)
+                                           {
+                                               AnsiConsole.MarkupLine("[green]Info: .net default Resize mode selected, Scaler settings will be ignored[/]");
+                                           }
+                                           else if (!FastResize && !Resize && SharpResize)
+                                           {
+                                               AnsiConsole.MarkupLine("[green]Info: SharpResize mode selected, Scaler settings will be ignored[/]");
                                            }
                                            else
+                                           {
+                                               AnsiConsole.MarkupLine("[green]Info: several resizer methods specified, using FastResize as default mode selected, Scaler settings will be ignored[/]");
+                                               Resize = false;
+                                               FastResize = true;
+                                               SharpResize = false;
+                                           }
+
+                                           if (PerformanceTest)
+                                           {
+                                               AnsiConsole.MarkupLine("[green]Info: performance test disabled[/]");
+                                               PerformanceTest = false;
+                                           }
+                                           if (o.Width == 0)
+                                           {
+                                               AnsiConsole.MarkupLine("[red]Info: width is not allowed to be 0[/]");
+                                               PressAnyKey(true);
+                                           }
+                                           if (o.Height == 0)
+                                           {
+                                               AnsiConsole.MarkupLine("[red]Info: heigth is not allowed to be 0[/]");
+                                               PressAnyKey(true);
+                                           }
+                                           NewWidth = o.Width;
+                                           NewHeight = o.Height;
+                                           AnsiConsole.MarkupLine($"[green]Info: new image size is set to {NewWidth}x{NewHeight}[/]");
+                                       }
+
+                                       //Parse input file
+                                       if (o.Input == string.Empty)
+                                       {
+                                           if (args.Length < 1)
                                            {
                                                AnsiConsole.MarkupLine("[red]Error: no inputfile[/]");
                                                PressAnyKey(true);
                                            }
-                                       }
-                                   }
-                                   else
-                                   {
-                                       if (File.Exists(o.Input))
-                                       {
-                                           InputFile = o.Input;
-                                           AnsiConsole.MarkupLine("[green]Info: inputfile " + ShortString(InputFile, 60) + "[/]");
-                                       }
-                                       else
-                                       {
-                                           AnsiConsole.MarkupLine("[red]Error: inputfile does not exist[/]");
-                                           PressAnyKey(true);
-                                       }
-                                   }
-
-                                   //Parse output file
-                                   if (o.Output == string.Empty && !PerformanceTestNoOutputFiles)
-                                   {
-                                       if (InputFile != string.Empty)
-                                       {
-                                           OutputFile = @Path.GetDirectoryName(InputFile) + @"\" + Path.GetFileNameWithoutExtension(InputFile) + "_resized" + Path.GetExtension(InputFile);
-                                           AnsiConsole.MarkupLine("[green]Info: outputfile " + ShortString(OutputFile, 60) + "[/]");
-                                       }
-                                       else
-                                       {
-                                           AnsiConsole.MarkupLine("[red]Error: no outputfile[/]");
-                                           PressAnyKey(true);
-                                       }
-                                   }
-                                   else if (!PerformanceTestNoOutputFiles)
-                                   {
-                                       OutputFile = o.Output;
-                                       AnsiConsole.MarkupLine("[green]Info: outputfile " + ShortString(OutputFile, 60) + "[/]");
-                                   }
-                                   if (OutputFile == InputFile)
-                                   {
-                                       AnsiConsole.MarkupLine("[red]Error: outputfile and inputfile can not be the same file[/]");
-                                       PressAnyKey(true);
-                                   }
-                                   if (!Directory.Exists(Path.GetDirectoryName(OutputFile)) && !PerformanceTestNoOutputFiles)
-                                       Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
-
-                                   //Generate ImageFormat from output file extension
-                                   if (!PerformanceTestNoOutputFiles)
-                                   {
-                                       OutputImageFormat = ImageFormatFromExt(OutputFile);
-                                       AnsiConsole.MarkupLine("[green]Info: output imageformat " + OutputImageFormat.ToString() + "[/]");
-                                   }
-
-                                   //Parse scaler algorithm
-                                   if (PerformanceTest)
-                                   {
-                                       AnsiConsole.MarkupLine("[green]Info: performance test enabled and ignoring scaler algorithm setting[/]");
-                                       if (PerformanceTestNoOutputFiles)
-                                           AnsiConsole.MarkupLine("[green]Info: performance test will not create output files[/]");
-                                   }
-                                   else
-                                   {
-                                       if (o.Scaler == string.Empty && !FastResize && !SharpResize && !Resize)
-                                       {
-                                           ScalerAlgorithm = "Scale2x";
-                                           AnsiConsole.MarkupLine("[green]Info: setting Scale2x as default scaler algorithm[/]");
-                                       }
-                                       else if (!FastResize && !SharpResize && !Resize)
-                                       {
-                                           ScalerAlgorithm = o.Scaler;
-                                           if (ScalerNameToScalerEnum(ScalerAlgorithm) == -1)
+                                           else
                                            {
-                                               AnsiConsole.MarkupLine("[red]Info: invalid scaler " + ScalerAlgorithm + " setting therefore Scale2x is set as default scaler algorithm[/]");
-                                               ScalerAlgorithm = "Scale2x";
+                                               if (File.Exists(args[0]))
+                                               {
+                                                   InputFile = args[0];
+                                                   AnsiConsole.MarkupLine("[green]Info: inputfile " + ShortString(InputFile, 60) + "[/]");
+                                               }
+                                               else
+                                               {
+                                                   AnsiConsole.MarkupLine("[red]Error: no inputfile[/]");
+                                                   PressAnyKey(true);
+                                               }
+                                           }
+                                       }
+                                       else
+                                       {
+                                           if (File.Exists(o.Input))
+                                           {
+                                               InputFile = o.Input;
+                                               AnsiConsole.MarkupLine("[green]Info: inputfile " + ShortString(InputFile, 60) + "[/]");
                                            }
                                            else
                                            {
-                                               ScalerAlgorithm = Enum.GetName(typeof(Scaler.Scalers), ScalerNameToScalerEnum(ScalerAlgorithm));
-                                               AnsiConsole.MarkupLine("[green]Info: using scaler " + ScalerAlgorithm + "[/]");
+                                               AnsiConsole.MarkupLine("[red]Error: inputfile does not exist[/]");
+                                               PressAnyKey(true);
                                            }
                                        }
-                                   }
-                               });
+
+                                       //Parse output file
+                                       if (o.Output == string.Empty && !PerformanceTestNoOutputFiles)
+                                       {
+                                           if (InputFile != string.Empty)
+                                           {
+                                               OutputFile = @Path.GetDirectoryName(InputFile) + @"\" + Path.GetFileNameWithoutExtension(InputFile) + "_resized" + Path.GetExtension(InputFile);
+                                               AnsiConsole.MarkupLine("[green]Info: outputfile " + ShortString(OutputFile, 60) + "[/]");
+                                           }
+                                           else
+                                           {
+                                               AnsiConsole.MarkupLine("[red]Error: no outputfile[/]");
+                                               PressAnyKey(true);
+                                           }
+                                       }
+                                       else if (!PerformanceTestNoOutputFiles)
+                                       {
+                                           OutputFile = o.Output;
+                                           AnsiConsole.MarkupLine("[green]Info: outputfile " + ShortString(OutputFile, 60) + "[/]");
+                                       }
+                                       if (OutputFile == InputFile)
+                                       {
+                                           AnsiConsole.MarkupLine("[red]Error: outputfile and inputfile can not be the same file[/]");
+                                           PressAnyKey(true);
+                                       }
+                                       if (!Directory.Exists(Path.GetDirectoryName(OutputFile)) && !PerformanceTestNoOutputFiles)
+                                           Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
+
+                                       //Generate ImageFormat from output file extension
+                                       if (!PerformanceTestNoOutputFiles)
+                                       {
+                                           OutputImageFormat = ImageFormatFromExt(OutputFile);
+                                           AnsiConsole.MarkupLine("[green]Info: output imageformat " + OutputImageFormat.ToString() + "[/]");
+                                       }
+
+                                       //Parse scaler algorithm
+                                       if (PerformanceTest)
+                                       {
+                                           AnsiConsole.MarkupLine("[green]Info: performance test enabled and ignoring scaler algorithm setting[/]");
+                                           if (PerformanceTestNoOutputFiles)
+                                               AnsiConsole.MarkupLine("[green]Info: performance test will not create output files[/]");
+                                       }
+                                       else
+                                       {
+                                           if (o.Scaler == string.Empty && !FastResize && !SharpResize && !Resize)
+                                           {
+                                               ScalerAlgorithm = "Scale2x";
+                                               AnsiConsole.MarkupLine("[green]Info: setting Scale2x as default scaler algorithm[/]");
+                                           }
+                                           else if (!FastResize && !SharpResize && !Resize)
+                                           {
+                                               ScalerAlgorithm = o.Scaler;
+                                               if (ScalerNameToScalerEnum(ScalerAlgorithm) == -1)
+                                               {
+                                                   AnsiConsole.MarkupLine("[red]Info: invalid scaler " + ScalerAlgorithm + " setting therefore Scale2x is set as default scaler algorithm[/]");
+                                                   ScalerAlgorithm = "Scale2x";
+                                               }
+                                               else
+                                               {
+                                                   ScalerAlgorithm = Enum.GetName(typeof(Scaler.Scalers), ScalerNameToScalerEnum(ScalerAlgorithm));
+                                                   AnsiConsole.MarkupLine("[green]Info: using scaler " + ScalerAlgorithm + "[/]");
+                                               }
+                                           }
+                                       }
+                                   });
+            }
+            catch(Exception ex)
+            {
+                AnsiConsole.MarkupLine($"[red]Exception: {ex.Message}[/]");
+                PressAnyKey();
+            }
 
             //Start resizing the image
             AnsiConsole.WriteLine("");

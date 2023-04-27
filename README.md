@@ -35,7 +35,7 @@ _Remark:_ some image/scaler combinations may produce errors when images get to b
 
 All the image resizing functions are bundled in the _Feuster.Imaging.Resizing.Lib_
 
-A Nuget package can be found in the project folder _Nuget_.
+The library and a nuget package are available in the library release bundle.
 
 ## Performance Test
 
