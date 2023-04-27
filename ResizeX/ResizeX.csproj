@@ -6,8 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>ResizeX</AssemblyName>
-	<AssemblyVersion>2.0.0.0</AssemblyVersion>
-	<FileVersion>2.0.0.0</FileVersion>
+	<AssemblyVersion>2.0.0.1</AssemblyVersion>
+	<FileVersion>2.0.0.1</FileVersion>
 	<Version>$(AssemblyVersion)</Version>
 	<SignAssembly>False</SignAssembly>
     <PlatformTarget>x64</PlatformTarget>

@@ -9,7 +9,7 @@ namespace Feuster.Imaging.Resizing
     public class Scaler
     {
         //GitVersion will be only be actualized/overwritten when using Cake build of ResizeX!
-        public const string GitVersion = "git-2273bbc";
+        public const string GitVersion = "git-2438258";
 
         //Version string will be only be actualized/overwritten when using Cake build of ResizeX as fallback Assembly is read out but this works not if lib is compiled into exe!
         public static string Version = "1.0.1.0";
